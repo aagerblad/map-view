@@ -15,6 +15,7 @@ export default function FirstPost() {
       disableDefaultUI: true,
       clickableIcons: true,
       scrollwheel: false,
+      mapId: "d24b2a60a5f70b81",
     }),
     []
   );
