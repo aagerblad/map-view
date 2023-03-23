@@ -17,7 +17,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <h1 className="title">
-          Hello hello <Link href="/posts/first-post">link</Link>
+          <Link href="/map">Map</Link>
         </h1>
       </main>
     </>
