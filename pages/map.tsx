@@ -39,7 +39,7 @@ export default function FirstPost() {
         mapContainerStyle={{ width: "800px", height: "800px" }}
         onLoad={() => console.log("Map Component Loaded...")}
       />
-      <Link href="/search">Search</Link>{" "}
+      <Link href="/search/test">Search</Link>{" "}
     </>
   );
 }
