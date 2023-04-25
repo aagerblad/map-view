@@ -1,9 +1,11 @@
-import { useLoadScript, GoogleMap } from "@react-google-maps/api";
+import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 import type { NextPage } from "next";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export default function FirstPost() {
+  const [post, setPost] = useState("");
+  const [markers, setMarkers] = useState<any[]>([]);
   const libraries = useMemo(() => ["places"], []);
 
   const mapCenter = useMemo(
@@ -29,6 +31,26 @@ export default function FirstPost() {
     return <p>Loading...</p>;
   }
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    const postData = async () => {
+      const data = {
+        post: post,
+      };
+
+      const response = await fetch(`/api/maps?search=${post}`, {
+        method: "GET",
+      });
+      return response.json();
+    };
+    postData().then((data) => {
+      console.log(data.message);
+      console.log("hejsan");
+      console.log(data.results.props.data.candidates);
+      setMarkers(data.results.props.data.candidates);
+    });
+  }
+
   return (
     <>
       <GoogleMap
@@ -38,8 +60,23 @@ export default function FirstPost() {
         mapTypeId={google.maps.MapTypeId.ROADMAP}
         mapContainerStyle={{ width: "800px", height: "800px" }}
         onLoad={() => console.log("Map Component Loaded...")}
-      />
-      <Link href="/search/test">Search</Link>{" "}
+      >
+        {markers.map((m) => (
+          <MarkerF position={m.location}></MarkerF>
+        ))}
+      </GoogleMap>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="post">Post</label>
+          <input
+            id="post"
+            type="text"
+            value={post}
+            onChange={(e) => setPost(e.target.value)}
+          />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
     </>
   );
 }
