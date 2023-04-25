@@ -43,10 +43,8 @@ export default function FirstPost() {
       });
       return response.json();
     };
+
     postData().then((data) => {
-      console.log(data.message);
-      console.log("hejsan");
-      console.log(data.results.props.data.candidates);
       setMarkers(data.results.props.data.candidates);
     });
   }
@@ -62,7 +60,7 @@ export default function FirstPost() {
         onLoad={() => console.log("Map Component Loaded...")}
       >
         {markers.map((m) => (
-          <MarkerF position={m.location}></MarkerF>
+          <MarkerF key={m.name} position={m.location}></MarkerF>
         ))}
       </GoogleMap>
       <form onSubmit={handleSubmit}>

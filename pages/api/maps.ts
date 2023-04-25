@@ -37,12 +37,11 @@ export async function maps_api(query) {
 
 export default async function handler(req, res) {
   const requestMethod = req.method;
+  const search_query = req.query.search;
 
-  const query = req.query.search;
-
-  const result = await maps_api(query)
+  const result = await maps_api(search_query)
 
   if(requestMethod == 'GET') {
-    res.status(200).json({ message: `You submitted the following data: ${query.id}`, results: result })
+    res.status(200).json({results: result })
   }
 }
