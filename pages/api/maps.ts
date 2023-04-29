@@ -5,22 +5,19 @@ type Data = {
   name: string
 }
 
-export async function maps_api(query) {
-  const q = query;
-  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&query=${q}`;
-  const res = await fetch(url);
+export async function maps_api(query, lat, lng) {
+  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`
+  // const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&query=${query}&location=${latlng}`;
+
+  const searchParams = new URLSearchParams([['query', query], ['location', lat + "," + lng]])
+  // const searchParams = new URLSearchParams([['query', query]])
+  console.log(url + searchParams.toString())
+  const res = await fetch(url + searchParams.toString());
   const resJson = await res.json();
   const data = {
     status: resJson.status,
     query: query,
     candidates: resJson.results.map((item) => {
-      console.log(item)
-      // let image = "";
-
-      // if ("photos" in item) {
-      //   image = `https://maps.googleapis.com/maps/api/place/photo?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&maxwidth=400&photoreference=${item.photos[0].photo_reference}`;
-      // }
-
       return {
         location: item.geometry.location,
         formatted_address: item.formatted_address,
@@ -28,7 +25,6 @@ export async function maps_api(query) {
         name: item.name,
         place_id: item.place_id,
         types: item.types,
-        // image: image,
       };
     }),
   };
@@ -38,8 +34,10 @@ export async function maps_api(query) {
 export default async function handler(req, res) {
   const requestMethod = req.method;
   const search_query = req.query.search;
+  const lat = req.query.lat;
+  const lng = req.query.lng;
 
-  const result = await maps_api(search_query)
+  const result = await maps_api(search_query, lat, lng)
 
   if(requestMethod == 'GET') {
     res.status(200).json({results: result })
