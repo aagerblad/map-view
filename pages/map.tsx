@@ -1,9 +1,4 @@
-import {
-  useLoadScript,
-  GoogleMap,
-  MarkerF,
-  Marker,
-} from "@react-google-maps/api";
+import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 import { useMemo, useState } from "react";
 
 export default function FirstPost() {
@@ -70,34 +65,44 @@ export default function FirstPost() {
 
   return (
     <>
-      <GoogleMap
-        options={mapOptions}
-        zoom={14}
-        center={mapCenter}
-        mapTypeId={google.maps.MapTypeId.ROADMAP}
-        mapContainerStyle={{ width: "800px", height: "800px" }}
-        onLoad={handleOnLoad}
-        onDragEnd={handleCenterChanged}
-      >
-        {markers.map((m) => (
-          <MarkerF key={m.name} position={m.location}></MarkerF>
-        ))}
-      </GoogleMap>
-      <h1>
-        {mapCenter.lat} {mapCenter.lng}
-      </h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="post">Post</label>
-          <input
-            id="post"
-            type="text"
-            value={post}
-            onChange={(e) => setPost(e.target.value)}
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
+      <div className="panel">
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="post">Post</label>
+            <input
+              id="post"
+              type="text"
+              value={post}
+              onChange={(e) => setPost(e.target.value)}
+            />
+            {/* <button type="submit">Submit</button> */}
+          </div>
+        </form>
+      </div>
+      <div>
+        <GoogleMap
+          options={mapOptions}
+          zoom={14}
+          center={mapCenter}
+          mapTypeId={google.maps.MapTypeId.ROADMAP}
+          // mapContainerStyle={{ width: "800px", height: "800px" }}
+          mapContainerStyle={{
+            width: "100%",
+            height: "100%",
+            padding: "0",
+            margin: "0",
+            position: "absolute",
+            top: "0",
+            left: "0",
+          }}
+          onLoad={handleOnLoad}
+          onDragEnd={handleCenterChanged}
+        >
+          {markers.map((m) => (
+            <MarkerF key={m.name} position={m.location}></MarkerF>
+          ))}
+        </GoogleMap>
+      </div>
     </>
   );
 }

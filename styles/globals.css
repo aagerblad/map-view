@@ -105,3 +105,23 @@ a {
     color-scheme: dark;
   }
 }
+
+.fullscreen {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  /* extra fullscreen guarantees - you might not need the rest */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.panel {
+  position: relative;
+  z-index: 100;
+  margin: 10px;
+  width: 200px;
+  height: 90%;
+  background-color: #fff;
+}

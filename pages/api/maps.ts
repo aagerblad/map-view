@@ -1,17 +1,12 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-
-type Data = {
-  name: string
-}
-
 export async function maps_api(query, lat, lng) {
-  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`
-  // const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&query=${query}&location=${latlng}`;
+  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`;
+  const params = {
+    query: query,
+    location: lat + "," + lng,
+  };
+  const searchParams = new URLSearchParams(params);
 
-  const searchParams = new URLSearchParams([['query', query], ['location', lat + "," + lng]])
-  // const searchParams = new URLSearchParams([['query', query]])
-  console.log(url + searchParams.toString())
+  console.log(url + searchParams.toString());
   const res = await fetch(url + searchParams.toString());
   const resJson = await res.json();
   const data = {
@@ -37,9 +32,9 @@ export default async function handler(req, res) {
   const lat = req.query.lat;
   const lng = req.query.lng;
 
-  const result = await maps_api(search_query, lat, lng)
+  const result = await maps_api(search_query, lat, lng);
 
-  if(requestMethod == 'GET') {
-    res.status(200).json({results: result })
+  if (requestMethod == "GET") {
+    res.status(200).json({ results: result });
   }
 }
