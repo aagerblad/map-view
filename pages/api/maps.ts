@@ -1,38 +1,47 @@
-export async function maps_api(query, lat, lng) {
-  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`;
-  const params = {
-    query: query,
-    location: lat + "," + lng,
-  };
+export function createQuery(params) {
+  const url =
+    `https://maps.googleapis.com/maps/api/place/textsearch/json?` +
+    `key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`;
   const searchParams = new URLSearchParams(params);
+  return url + searchParams.toString();
+}
 
-  console.log(url + searchParams.toString());
-  const res = await fetch(url + searchParams.toString());
+export async function callAPI(query: RequestInfo | URL) {
+  const res = await fetch(query);
   const resJson = await res.json();
+  return resJson;
+}
+
+export async function mapsAPI(params) {
+  const query = createQuery(params);
+  var resultData = await callAPI(query);
+
   const data = {
-    status: resJson.status,
-    query: query,
-    candidates: resJson.results.map((item) => {
+    status: resultData.status,
+    candidates: resultData.results.map((item) => {
       return {
         location: item.geometry.location,
-        formatted_address: item.formatted_address,
+        formattedAddress: item.formatted_address,
         icon: item.icon,
         name: item.name,
-        place_id: item.place_id,
+        placeId: item.place_id,
         types: item.types,
       };
     }),
+    nextPageToken: resultData.next_page_token,
   };
-  return { props: { data } };
+
+  return data;
 }
 
 export default async function handler(req, res) {
   const requestMethod = req.method;
-  const search_query = req.query.search;
-  const lat = req.query.lat;
-  const lng = req.query.lng;
+  const params = {
+    query: req.query.search_query,
+    location: req.query.location,
+  };
 
-  const result = await maps_api(search_query, lat, lng);
+  const result = await mapsAPI(params);
 
   if (requestMethod == "GET") {
     res.status(200).json({ results: result });
