@@ -14,6 +14,7 @@ export async function callAPI(query: RequestInfo | URL) {
 
 export async function mapsAPI(params) {
   const query = createQuery(params);
+
   var resultData = await callAPI(query);
 
   const data = {

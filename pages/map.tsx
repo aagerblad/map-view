@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 
 export default function FirstPost() {
   const [post, setPost] = useState("");
-  const [markers, setMarkers] = useState<any[]>([]);
+  const [places, setPlaces] = useState<any[]>([]);
   const libraries = useMemo(() => ["places"], []);
 
   const [mapCenter, setMapCenter] = useState({ lat: 40.69133, lng: -73.98855 });
@@ -42,13 +42,34 @@ export default function FirstPost() {
     return <p>Loading...</p>;
   }
 
+  function addPlaces(newPlaces) {
+    const existingPlaces = new Set();
+    places.map((m) => existingPlaces.add(m.placeId));
+
+    const newPlacesWithVis = newPlaces.map((m) => ({ ...m, included: "true" }));
+
+    const deduplicatedPlaces = newPlacesWithVis.filter((item) => {
+      const duplicate = existingPlaces.has(item.placeId);
+      return !duplicate;
+    });
+
+    setPlaces(places.concat(deduplicatedPlaces));
+  }
+
+  function removePlace(placeId) {
+    setPlaces(
+      places.map((m) =>
+        m.placeId == placeId ? { ...m, included: "false" } : m
+      )
+    );
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     const postData = async () => {
-      const lat = mapCenter.lat;
-      const lng = mapCenter.lng;
+      const location = mapCenter.lat + "," + mapCenter.lng;
       const response = await fetch(
-        `/api/maps?search=${post}&lat=${lat}&lng=${lng}`,
+        `/api/maps?search_query=${post}&location=${location}`,
         {
           method: "GET",
         }
@@ -58,26 +79,61 @@ export default function FirstPost() {
     };
 
     postData().then((data) => {
-      console.log(data.results);
-      setMarkers(data.results.props.data.candidates);
+      addPlaces(data.results.candidates);
     });
   }
 
+  const filteredPlaces = places
+    .filter((place) => place.included == "true")
+    .sort((one, two) => (one.name < two.name ? -1 : 1));
+  const removedPlaces = places
+    .filter((place) => place.included == "false")
+    .sort((one, two) => (one.name < two.name ? -1 : 1));
   return (
     <>
       <div className="panel">
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="post">Post</label>
+            {/* <label htmlFor="post">Post</label> */}
             <input
               id="post"
               type="text"
               value={post}
               onChange={(e) => setPost(e.target.value)}
             />
-            {/* <button type="submit">Submit</button> */}
+            <button type="submit">Submit</button>
           </div>
         </form>
+        <ul>
+          {filteredPlaces.map((m) => (
+            <li key={m.name}>
+              <div className="place">
+                <button
+                  className="place_button"
+                  onClick={() => removePlace(m.placeId)}
+                >
+                  X
+                </button>
+                {m.name}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <ul>
+          {removedPlaces.map((m) => (
+            <li key={m.name}>
+              <div className="place removed">
+                <button
+                  className="place_button"
+                  onClick={() => removePlace(m.placeId)}
+                >
+                  X
+                </button>
+                {m.name}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
       <div>
         <GoogleMap
@@ -98,7 +154,7 @@ export default function FirstPost() {
           onLoad={handleOnLoad}
           onDragEnd={handleCenterChanged}
         >
-          {markers.map((m) => (
+          {filteredPlaces.map((m) => (
             <MarkerF key={m.name} position={m.location}></MarkerF>
           ))}
         </GoogleMap>
