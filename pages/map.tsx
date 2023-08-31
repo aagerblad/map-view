@@ -12,7 +12,7 @@ export default function FirstPost() {
     () => ({
       disableDefaultUI: true,
       clickableIcons: true,
-      scrollwheel: false,
+      scrollwheel: true,
       mapId: "d24b2a60a5f70b81",
     }),
     []
@@ -153,11 +153,13 @@ export default function FirstPost() {
           }}
           onLoad={handleOnLoad}
           onDragEnd={handleCenterChanged}
+          onZoomChanged={handleCenterChanged}
         >
           {filteredPlaces.map((m) => (
             <MarkerF key={m.name} position={m.location}></MarkerF>
           ))}
         </GoogleMap>
+        <div className="mid_point">X</div>
       </div>
     </>
   );

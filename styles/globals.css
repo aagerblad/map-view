@@ -144,3 +144,10 @@ a {
 .place_button {
   margin: 2px;
 }
+
+.mid_point {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

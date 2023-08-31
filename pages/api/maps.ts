@@ -15,7 +15,10 @@ export async function callAPI(query: RequestInfo | URL) {
 export async function mapsAPI(params) {
   const query = createQuery(params);
 
+  console.log(query);
   var resultData = await callAPI(query);
+
+  console.log(resultData);
 
   const data = {
     status: resultData.status,
