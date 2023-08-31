@@ -1,4 +1,7 @@
 import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+
 import { useMemo, useState } from "react";
 
 export default function FirstPost() {
@@ -99,9 +102,12 @@ export default function FirstPost() {
               id="post"
               type="text"
               value={post}
+              className="search_window"
               onChange={(e) => setPost(e.target.value)}
             />
-            <button type="submit">Submit</button>
+            <button className="search_window_button" type="submit">
+              <FontAwesomeIcon icon={faMagnifyingGlass} />{" "}
+            </button>
           </div>
         </form>
         <ul>
