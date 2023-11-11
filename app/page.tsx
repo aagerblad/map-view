@@ -1,10 +1,12 @@
+"use client";
 import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import Collapsible from "react-collapsible";
 
 import { useMemo, useState } from "react";
 
-export default function FirstPost() {
+export default function Page() {
   const [post, setPost] = useState("");
   const [places, setPlaces] = useState<any[]>([]);
   const libraries = useMemo(() => ["places"], []);
@@ -67,16 +69,27 @@ export default function FirstPost() {
     );
   }
 
+  function addPlace(placeId) {
+    setPlaces(
+      places.map((m) => (m.placeId == placeId ? { ...m, included: "true" } : m))
+    );
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
+
     const postData = async () => {
       const location = mapCenter.lat + "," + mapCenter.lng;
-      const response = await fetch(
-        `/api/maps?search_query=${post}&location=${location}`,
-        {
-          method: "GET",
-        }
+      console.log(
+        "`@/pages/api/maps?search_query=${post}&location=${location}`"
       );
+      const response = await fetch(`/api/maps`, {
+        method: "GET",
+        headers: {
+          searchQuery: post,
+          location: location,
+        },
+      });
 
       return response.json();
     };
@@ -92,12 +105,13 @@ export default function FirstPost() {
   const removedPlaces = places
     .filter((place) => place.included == "false")
     .sort((one, two) => (one.name < two.name ? -1 : 1));
+
   return (
-    <>
+    <main>
       <div className="panel">
+        <h1>Map</h1>
         <form onSubmit={handleSubmit}>
           <div>
-            {/* <label htmlFor="post">Post</label> */}
             <input
               id="post"
               type="text"
@@ -125,21 +139,26 @@ export default function FirstPost() {
             </li>
           ))}
         </ul>
-        <ul>
-          {removedPlaces.map((m) => (
-            <li key={m.name}>
-              <div className="place removed">
-                <button
-                  className="place_button"
-                  onClick={() => removePlace(m.placeId)}
-                >
-                  X
-                </button>
-                {m.name}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <Collapsible
+          overflowWhenOpen="scroll"
+          trigger={<div className="remove_label">Removed</div>}
+        >
+          <ul>
+            {removedPlaces.map((m) => (
+              <li key={m.name}>
+                <div className="place removed">
+                  <button
+                    className="place_button"
+                    onClick={() => addPlace(m.placeId)}
+                  >
+                    X
+                  </button>
+                  {m.name}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Collapsible>
       </div>
       <div>
         <GoogleMap
@@ -167,6 +186,6 @@ export default function FirstPost() {
         </GoogleMap>
         <div className="mid_point">X</div>
       </div>
-    </>
+    </main>
   );
 }

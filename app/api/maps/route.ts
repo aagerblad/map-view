@@ -1,4 +1,6 @@
-export function createQuery(params) {
+import { NextResponse } from "next/server";
+
+function createQuery(params) {
   const url =
     `https://maps.googleapis.com/maps/api/place/textsearch/json?` +
     `key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`;
@@ -6,19 +8,19 @@ export function createQuery(params) {
   return url + searchParams.toString();
 }
 
-export async function callAPI(query: RequestInfo | URL) {
+async function callAPI(query: RequestInfo | URL) {
   const res = await fetch(query);
   const resJson = await res.json();
   return resJson;
 }
 
-export async function mapsAPI(params) {
+async function mapsAPI(params) {
   const query = createQuery(params);
 
-  console.log(query);
+  console.log("query:", query);
   var resultData = await callAPI(query);
 
-  console.log(resultData);
+  // console.log("resultData:", resultData);
 
   const data = {
     status: resultData.status,
@@ -38,16 +40,15 @@ export async function mapsAPI(params) {
   return data;
 }
 
-export default async function handler(req, res) {
-  const requestMethod = req.method;
+export async function GET(req: Request) {
   const params = {
-    query: req.query.search_query,
-    location: req.query.location,
+    query: req.headers.get("searchQuery"),
+    location: req.headers.get("location"),
   };
 
   const result = await mapsAPI(params);
 
-  if (requestMethod == "GET") {
-    res.status(200).json({ results: result });
-  }
+  console.log("result:", result);
+
+  return NextResponse.json({ results: result });
 }
