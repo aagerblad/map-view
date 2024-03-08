@@ -24,8 +24,6 @@ function Panel({
   return (
     <div className="panel">
       <h1>Map</h1>
-      <p>Panel</p>
-
       <form onSubmit={handleSubmit}>
         <div>
           <input
@@ -42,7 +40,7 @@ function Panel({
       </form>
       <ul>
         {includedPlaces.map((m) => (
-          <li key={m.name}>
+          <li key={m.placeId}>
             <div className="place">
               <button
                 className="place_button"
@@ -61,7 +59,7 @@ function Panel({
       >
         <ul>
           {excludedPlaces.map((m) => (
-            <li key={m.name}>
+            <li key={m.placeId}>
               <div className="place removed">
                 <button
                   className="place_button"

@@ -12,8 +12,6 @@ export function addPlaces(places, newPlaces) {
     return !duplicate;
   });
 
-  console.log("test");
-
   return places.concat(deduplicatedPlaces);
 }
 

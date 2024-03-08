@@ -1,51 +1,65 @@
 import { NextResponse } from "next/server";
+import { text } from "stream/consumers";
 
-function createQuery(params) {
-  const url =
-    `https://maps.googleapis.com/maps/api/place/textsearch/json?` +
-    `key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&`;
-  const searchParams = new URLSearchParams(params);
-  return url + searchParams.toString();
-}
+const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 
-async function callAPI(query: RequestInfo | URL) {
-  const res = await fetch(query);
+async function callNewAPI(body: string) {
+  const url: string = "https://places.googleapis.com/v1/places:searchText";
+  const requestHeaders: HeadersInit = new Headers();
+  requestHeaders.set("Content-Type", "application/json");
+  if (googleMapsKey) {
+    requestHeaders.set("X-Goog-Api-Key", googleMapsKey);
+  }
+  requestHeaders.set(
+    "X-Goog-FieldMask",
+    "places.name,places.display_name,places.location,places.websiteUri,places.photos,places.rating,places.primaryType"
+  );
+  const res = await fetch(url, {
+    method: "POST",
+    headers: requestHeaders,
+    body: body,
+  });
+
   const resJson = await res.json();
   return resJson;
 }
 
-async function mapsAPI(params) {
-  const query = createQuery(params);
-
-  var resultData = await callAPI(query);
+async function mapsAPI(params: string) {
+  var newRes = await callNewAPI(params);
 
   const data = {
-    status: resultData.status,
-    candidates: resultData.results.map((item) => {
+    status: newRes.status,
+    candidates: newRes.places.map((item) => {
       return {
-        location: item.geometry.location,
-        formattedAddress: item.formatted_address,
-        icon: item.icon,
-        name: item.name,
-        placeId: item.place_id,
-        types: item.types,
+        location: item.location,
+        name: item.displayName.text,
+        placeId: item.name,
+        photos: item.photos,
+        // photo: photoResult,
       };
     }),
-    nextPageToken: resultData.next_page_token,
   };
 
   return data;
 }
 
 export async function GET(req: Request) {
-  const params = {
-    query: req.headers.get("searchQuery"),
-    location: req.headers.get("location"),
-  };
+  const body = JSON.stringify({
+    textQuery: req.headers.get("searchQuery"),
+    languageCode: "en",
+    locationBias: {
+      circle: {
+        // center: req.headers.get("location"),
+        center: {
+          latitude: parseFloat(req.headers.get("latitude") as string),
+          longitude: parseFloat(req.headers.get("longitude") as string),
+        },
+        radius: 1000,
+      },
+    },
+  });
 
-  const result = await mapsAPI(params);
-
-  console.log("result:", result);
+  const result = await mapsAPI(body);
 
   return NextResponse.json({ results: result });
 }

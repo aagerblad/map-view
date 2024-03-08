@@ -6,6 +6,7 @@ import { AdvancedMarker, APIProvider, Map } from "@vis.gl/react-google-maps";
 
 import { useMemo, useState } from "react";
 import { addPlaces, excludePlace, includePlace } from "./lib/place_handlers";
+import { MAP_PANE } from "@react-google-maps/api";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
 
@@ -20,15 +21,12 @@ export default function Page() {
     e.preventDefault();
 
     const postData = async () => {
-      const location = mapCenter.lat + "," + mapCenter.lng;
-      console.log(
-        "`@/pages/api/maps?search_query=${post}&location=${location}`"
-      );
       const response = await fetch(`/api/maps`, {
         method: "GET",
         headers: {
           searchQuery: post,
-          location: location,
+          latitude: mapCenter.lat.toString(),
+          longitude: mapCenter.lng.toString(),
         },
       });
 
@@ -57,12 +55,14 @@ export default function Page() {
           gestureHandling={"greedy"}
           disableDefaultUI={true}
           mapId={"d24b2a60a5f70b81"}
-          // onLoad={handleOnLoad}
-          // onDragEnd={handleCenterChanged}
-          // onZoomChanged={handleCenterChanged}
+          onCenterChanged={(e) => setMapCenter(e.detail.center)}
         >
           {includedPlaces.map((m) => (
-            <MapMarker key={m.name} position={m.location}></MapMarker>
+            <MapMarker
+              key={m.placeId}
+              name={m.name}
+              position={m.location}
+            ></MapMarker>
           ))}
         </Map>
         <Panel
