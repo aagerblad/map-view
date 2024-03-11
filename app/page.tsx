@@ -11,7 +11,7 @@ import { MAP_PANE } from "@react-google-maps/api";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
 
 export default function Page() {
-  const [post, setPost] = useState("");
+  const [post, setPost] = useState("burger");
   const [places, setPlaces] = useState<any[]>([]);
   // const libraries = useMemo(() => ["places"], []);
 
@@ -62,6 +62,7 @@ export default function Page() {
               key={m.placeId}
               name={m.name}
               position={m.location}
+              photo={m.photoUri}
             ></MapMarker>
           ))}
         </Map>
