@@ -2,11 +2,10 @@
 import Panel from "./components/panel";
 import MapMarker from "./components/map_marker";
 
-import { AdvancedMarker, APIProvider, Map } from "@vis.gl/react-google-maps";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
 
 import { useMemo, useState } from "react";
 import { addPlaces, excludePlace, includePlace } from "./lib/place_handlers";
-import { MAP_PANE } from "@react-google-maps/api";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
 
@@ -27,6 +26,7 @@ export default function Page() {
           searchQuery: post,
           latitude: mapCenter.lat.toString(),
           longitude: mapCenter.lng.toString(),
+          radius: "1000",
         },
       });
 

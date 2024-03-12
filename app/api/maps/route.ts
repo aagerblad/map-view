@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { text } from "stream/consumers";
 
 const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 
@@ -44,7 +43,9 @@ async function callPhotoAPI(photoName: string) {
   return resJson;
 }
 
-async function generateResults(res: any) {
+async function mapsAPI(params: string) {
+  var res = await callAPI(params);
+
   const data = await Promise.all(
     res.places.map(async (item) => {
       const photoName = item.photos[0].name;
@@ -60,15 +61,6 @@ async function generateResults(res: any) {
     })
   );
 
-  return data;
-}
-
-async function mapsAPI(params: string) {
-  // await new Promise((r) => setTimeout(r, 2000));
-  var newRes = await callAPI(params);
-
-  const data = await generateResults(newRes);
-
   return { candidates: data };
 }
 
@@ -78,17 +70,15 @@ export async function GET(req: Request) {
     languageCode: "en",
     locationBias: {
       circle: {
-        // center: req.headers.get("location"),
         center: {
-          latitude: parseFloat(req.headers.get("latitude") as string),
-          longitude: parseFloat(req.headers.get("longitude") as string),
+          latitude: req.headers.get("latitude"),
+          longitude: req.headers.get("longitude"),
         },
-        radius: 1000,
+        radius: req.headers.get("radius"),
       },
     },
   });
 
   const result = await mapsAPI(body);
-
   return NextResponse.json({ results: result });
 }
