@@ -65,20 +65,7 @@ async function mapsAPI(params: string) {
 }
 
 export async function GET(req: Request) {
-  const body = JSON.stringify({
-    textQuery: req.headers.get("searchQuery"),
-    languageCode: "en",
-    locationBias: {
-      circle: {
-        center: {
-          latitude: req.headers.get("latitude"),
-          longitude: req.headers.get("longitude"),
-        },
-        radius: req.headers.get("radius"),
-      },
-    },
-  });
-
+  const body = req.headers.get("searchQuery") as string;
   const result = await mapsAPI(body);
   return NextResponse.json({ results: result });
 }

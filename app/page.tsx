@@ -20,13 +20,24 @@ export default function Page() {
     e.preventDefault();
 
     const postData = async () => {
+      const searchQuery = JSON.stringify({
+        textQuery: post,
+        languageCode: "en",
+        locationBias: {
+          circle: {
+            center: {
+              latitude: mapCenter.lat.toString(),
+              longitude: mapCenter.lng.toString(),
+            },
+            radius: "1000",
+          },
+        },
+      });
+
       const response = await fetch(`/api/maps`, {
         method: "GET",
         headers: {
-          searchQuery: post,
-          latitude: mapCenter.lat.toString(),
-          longitude: mapCenter.lng.toString(),
-          radius: "1000",
+          searchQuery: searchQuery,
         },
       });
 
