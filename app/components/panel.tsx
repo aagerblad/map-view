@@ -12,18 +12,41 @@ function Panel({
   excludePlace,
   includePlace,
   handleSubmit,
-
-  // post: string;
-  // setPost: (post: string) => void;
-  // includedPlaces: any[];
-  // removedPlaces: any[];
-  // excludePlace: (placeId: string) => void;
-  // includePlace: (placeId: string) => void;
-  // handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setIncludedPlaces,
+}: {
+  post: string;
+  setPost: (post: string) => void;
+  includedPlaces: any[];
+  excludedPlaces: any[];
+  excludePlace: (placeId: string) => void;
+  includePlace: (placeId: string) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setIncludedPlaces: (places: any[]) => void;
 }) {
+  const handleKeywordClick = (keyword: string) => {
+    setPost(keyword);
+    // Create a synthetic form event to trigger the search
+    const syntheticEvent = {
+      preventDefault: () => {},
+    } as React.FormEvent<HTMLFormElement>;
+    handleSubmit(syntheticEvent);
+  };
+
+  const handleClearAll = () => {
+    // Clear all included places by setting the list to empty
+    setIncludedPlaces([]);
+  };
+
   return (
     <div className="panel">
       <h1>Map</h1>
+      <button 
+        className="restart-button"
+        type="button"
+        onClick={handleClearAll}
+      >
+        Restart
+      </button>
       <form onSubmit={handleSubmit}>
         <div>
           <input
@@ -35,6 +58,22 @@ function Panel({
           />
           <button className="search_window_button" type="submit">
             <FontAwesomeIcon icon={faMagnifyingGlass} />{" "}
+          </button>
+        </div>
+        <div className="keyword-buttons">
+          <button
+            type="button"
+            className="keyword-button"
+            onClick={() => handleKeywordClick("clothing")}
+          >
+            Clothing
+          </button>
+          <button
+            type="button"
+            className="keyword-button"
+            onClick={() => handleKeywordClick("restaurants")}
+          >
+            Restaurants
           </button>
         </div>
       </form>
@@ -55,7 +94,7 @@ function Panel({
       </ul>
       <Collapsible
         overflowWhenOpen="scroll"
-        trigger={<div className="remove_label">Removed</div>}
+        trigger={<div className="excluded-label">Excluded</div>}
       >
         <ul>
           {excludedPlaces.map((m) => (

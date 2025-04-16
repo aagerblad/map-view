@@ -56,6 +56,11 @@ export default function Page() {
     .filter((place) => place.included == "false")
     .sort((one, two) => (one.name < two.name ? -1 : 1));
 
+  const setIncludedPlaces = () => {
+    // Reset both lists by clearing all places
+    setPlaces([]);
+  };
+
   return (
     <main>
       <APIProvider apiKey={API_KEY}>
@@ -85,6 +90,7 @@ export default function Page() {
           excludePlace={(placeId) => setPlaces(excludePlace(places, placeId))}
           includePlace={(placeId) => setPlaces(includePlace(places, placeId))}
           handleSubmit={handleSubmit}
+          setIncludedPlaces={setIncludedPlaces}
         />
         {/* <div className="mid_point">X</div> */}
       </APIProvider>
