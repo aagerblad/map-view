@@ -12,6 +12,7 @@ const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
 export default function Page() {
   const [post, setPost] = useState("burger");
   const [places, setPlaces] = useState<any[]>([]);
+  const [selectedPlaces, setSelectedPlaces] = useState<Set<string>>(new Set());
   // const libraries = useMemo(() => ["places"], []);
 
   const [mapCenter, setMapCenter] = useState({ lat: 40.69133, lng: -73.98855 });
@@ -61,6 +62,23 @@ export default function Page() {
     setPlaces([]);
   };
 
+  const handleMarkerClick = (placeId: string, event: React.MouseEvent) => {
+    const newSelected = new Set(selectedPlaces);
+    if (event.metaKey || event.ctrlKey) {
+      // Cmd/Ctrl + click: toggle selection
+      if (newSelected.has(placeId)) {
+        newSelected.delete(placeId);
+      } else {
+        newSelected.add(placeId);
+      }
+    } else {
+      // Normal click: select single
+      newSelected.clear();
+      newSelected.add(placeId);
+    }
+    setSelectedPlaces(newSelected);
+  };
+
   return (
     <main>
       <APIProvider apiKey={API_KEY}>
@@ -79,7 +97,9 @@ export default function Page() {
               name={m.name}
               position={m.location}
               photo={m.photoUri}
-            ></MapMarker>
+              isSelected={selectedPlaces.has(m.placeId)}
+              onMarkerClick={(e) => handleMarkerClick(m.placeId, e)}
+            />
           ))}
         </Map>
         <Panel
@@ -91,6 +111,10 @@ export default function Page() {
           includePlace={(placeId) => setPlaces(includePlace(places, placeId))}
           handleSubmit={handleSubmit}
           setIncludedPlaces={setIncludedPlaces}
+          places={places}
+          setPlaces={setPlaces}
+          onSelectionChange={setSelectedPlaces}
+          selectedPlaces={selectedPlaces}
         />
         {/* <div className="mid_point">X</div> */}
       </APIProvider>

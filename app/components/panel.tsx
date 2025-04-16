@@ -3,6 +3,7 @@ import * as React from "react";
 import Collapsible from "react-collapsible";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from "react";
 
 function Panel({
   post,
@@ -13,6 +14,10 @@ function Panel({
   includePlace,
   handleSubmit,
   setIncludedPlaces,
+  places,
+  setPlaces,
+  onSelectionChange,
+  selectedPlaces,
 }: {
   post: string;
   setPost: (post: string) => void;
@@ -21,8 +26,15 @@ function Panel({
   excludePlace: (placeId: string) => void;
   includePlace: (placeId: string) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  setIncludedPlaces: (places: any[]) => void;
+  setIncludedPlaces: () => void;
+  places: any[];
+  setPlaces: (places: any[]) => void;
+  onSelectionChange: (places: Set<string>) => void;
+  selectedPlaces: Set<string>;
 }) {
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
+  const [lastSelectedList, setLastSelectedList] = useState<'included' | 'excluded' | null>(null);
+
   const handleKeywordClick = (keyword: string) => {
     setPost(keyword);
     // Create a synthetic form event to trigger the search
@@ -34,7 +46,60 @@ function Panel({
 
   const handleClearAll = () => {
     // Clear all included places by setting the list to empty
-    setIncludedPlaces([]);
+    setIncludedPlaces();
+  };
+
+  const handlePlaceClick = (placeId: string, index: number, event: React.MouseEvent, listType: 'included' | 'excluded') => {
+    const newSelected = new Set(selectedPlaces);
+    if (event.shiftKey && lastSelectedIndex !== null && lastSelectedList === listType) {
+      // Shift + click: select range
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+      const currentList = listType === 'included' ? includedPlaces : excludedPlaces;
+      for (let i = start; i <= end; i++) {
+        newSelected.add(currentList[i].placeId);
+      }
+    } else if (event.metaKey || event.ctrlKey) {
+      // Cmd/Ctrl + click: toggle selection
+      if (newSelected.has(placeId)) {
+        newSelected.delete(placeId);
+      } else {
+        newSelected.add(placeId);
+      }
+    } else {
+      // Normal click: select single
+      newSelected.clear();
+      newSelected.add(placeId);
+    }
+    onSelectionChange(newSelected);
+    setLastSelectedIndex(index);
+    setLastSelectedList(listType);
+  };
+
+  const handleExcludeSelected = () => {
+    // Create a new array with all places, marking selected ones as excluded
+    const updatedPlaces = places.map(place => 
+      selectedPlaces.has(place.placeId) 
+        ? { ...place, included: "false" }
+        : place
+    );
+    setPlaces(updatedPlaces);
+    onSelectionChange(new Set());
+    setLastSelectedIndex(null);
+    setLastSelectedList(null);
+  };
+
+  const handleIncludeSelected = () => {
+    // Create a new array with all places, marking selected ones as included
+    const updatedPlaces = places.map(place => 
+      selectedPlaces.has(place.placeId) 
+        ? { ...place, included: "true" }
+        : place
+    );
+    setPlaces(updatedPlaces);
+    onSelectionChange(new Set());
+    setLastSelectedIndex(null);
+    setLastSelectedList(null);
   };
 
   return (
@@ -78,39 +143,49 @@ function Panel({
         </div>
       </form>
       <ul>
-        {includedPlaces.map((m) => (
+        {includedPlaces.map((m, index) => (
           <li key={m.placeId}>
-            <div className="place">
-              <button
-                className="place_button"
-                onClick={() => excludePlace(m.placeId)}
-              >
-                X
-              </button>
+            <div 
+              className={`place ${selectedPlaces.has(m.placeId) ? 'selected' : ''}`}
+              onClick={(e) => handlePlaceClick(m.placeId, index, e, 'included')}
+            >
               {m.name}
             </div>
           </li>
         ))}
       </ul>
+      <button 
+        className="exclude-button"
+        type="button"
+        onClick={handleExcludeSelected}
+        disabled={selectedPlaces.size === 0}
+      >
+        Exclude Selected
+      </button>
       <Collapsible
         overflowWhenOpen="scroll"
         trigger={<div className="excluded-label">Excluded</div>}
       >
         <ul>
-          {excludedPlaces.map((m) => (
+          {excludedPlaces.map((m, index) => (
             <li key={m.placeId}>
-              <div className="place removed">
-                <button
-                  className="place_button"
-                  onClick={() => includePlace(m.placeId)}
-                >
-                  X
-                </button>
+              <div 
+                className={`place removed ${selectedPlaces.has(m.placeId) ? 'selected' : ''}`}
+                onClick={(e) => handlePlaceClick(m.placeId, index, e, 'excluded')}
+              >
                 {m.name}
               </div>
             </li>
           ))}
         </ul>
+        <button 
+          className="include-button"
+          type="button"
+          onClick={handleIncludeSelected}
+          disabled={selectedPlaces.size === 0}
+        >
+          Add Back Selected
+        </button>
       </Collapsible>
     </div>
   );

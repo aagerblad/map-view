@@ -5,10 +5,14 @@ function MapMarker({
   name,
   position,
   photo,
+  isSelected,
+  onMarkerClick,
 }: {
   name: string;
   position: any;
   photo: string;
+  isSelected: boolean;
+  onMarkerClick: (event: React.MouseEvent) => void;
 }) {
   const pos = {
     lat: position.latitude,
@@ -20,7 +24,10 @@ function MapMarker({
       {/* <Pin background={"#FBBC04"} glyphColor={"#f33"} borderColor={"#0f0"}>
         <div>{name}</div>
       </Pin> */}
-      <div className={styles.pricetag}>
+      <div 
+        className={`${styles.pricetag} ${isSelected ? styles.selected : ''}`}
+        onClick={onMarkerClick}
+      >
         {name}
         <br />
         <img src={photo} alt={name} />

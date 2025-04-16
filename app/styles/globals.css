@@ -165,19 +165,32 @@ a {
   align-items: center;
   gap: 8px;
   transition: background-color 0.2s;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
 }
 
 .place:hover {
   background-color: #444;
 }
 
+.place.selected {
+  background-color: #555;
+  border-color: #666;
+}
+
+.place.selected:hover {
+  background-color: #666;
+}
+
 .removed {
   background-color: #222;
   color: #888;
+  cursor: default;
 }
 
 .removed:hover {
-  background-color: #333;
+  background-color: #222;
 }
 
 .place_button {
@@ -197,6 +210,52 @@ a {
 
 .place_button:hover {
   background-color: #666;
+}
+
+.exclude-button {
+  margin: 8px 16px;
+  padding: 8px;
+  background-color: #800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  width: calc(100% - 32px);
+}
+
+.exclude-button:hover:not(:disabled) {
+  background-color: #a00;
+}
+
+.exclude-button:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.include-button {
+  margin: 8px 16px;
+  padding: 8px;
+  background-color: #284;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  width: calc(100% - 32px);
+}
+
+.include-button:hover:not(:disabled) {
+  background-color: #396;
+}
+
+.include-button:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .Collapsible {
