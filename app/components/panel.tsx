@@ -48,7 +48,7 @@ function Panel({
         Restart
       </button>
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="search-container">
           <input
             id="post"
             type="text"
@@ -57,7 +57,7 @@ function Panel({
             onChange={(e) => setPost(e.target.value)}
           />
           <button className="search_window_button" type="submit">
-            <FontAwesomeIcon icon={faMagnifyingGlass} />{" "}
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
           </button>
         </div>
         <div className="keyword-buttons">
