@@ -14,6 +14,7 @@ function Panel({
   includePlace,
   handleSubmit,
   setIncludedPlaces,
+  
   places,
   setPlaces,
   onSelectionChange,
@@ -67,9 +68,13 @@ function Panel({
         newSelected.add(placeId);
       }
     } else {
-      // Normal click: select single
-      newSelected.clear();
-      newSelected.add(placeId);
+      // Normal click: toggle single selection
+      if (newSelected.has(placeId)) {
+        newSelected.delete(placeId);
+      } else {
+        newSelected.clear();
+        newSelected.add(placeId);
+      }
     }
     onSelectionChange(newSelected);
     setLastSelectedIndex(index);
@@ -101,6 +106,10 @@ function Panel({
     setLastSelectedIndex(null);
     setLastSelectedList(null);
   };
+
+  const isAnySelectedExcluded = Array.from(selectedPlaces).some(placeId => 
+    excludedPlaces.some(place => place.placeId === placeId)
+  );
 
   return (
     <div className="panel">
@@ -158,7 +167,7 @@ function Panel({
         className="exclude-button"
         type="button"
         onClick={handleExcludeSelected}
-        disabled={selectedPlaces.size === 0}
+        disabled={selectedPlaces.size === 0 || isAnySelectedExcluded}
       >
         Exclude Selected
       </button>

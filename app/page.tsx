@@ -72,9 +72,13 @@ export default function Page() {
         newSelected.add(placeId);
       }
     } else {
-      // Normal click: select single
-      newSelected.clear();
-      newSelected.add(placeId);
+      // Normal click: toggle single selection
+      if (newSelected.has(placeId)) {
+        newSelected.delete(placeId);
+      } else {
+        newSelected.clear();
+        newSelected.add(placeId);
+      }
     }
     setSelectedPlaces(newSelected);
   };
@@ -91,7 +95,7 @@ export default function Page() {
           mapId={"d24b2a60a5f70b81"}
           onCenterChanged={(e) => setMapCenter(e.detail.center)}
         >
-          {includedPlaces.map((m) => (
+          {places.map((m) => (
             <MapMarker
               key={m.placeId}
               name={m.name}
@@ -99,6 +103,7 @@ export default function Page() {
               photo={m.photoUri}
               isSelected={selectedPlaces.has(m.placeId)}
               onMarkerClick={(e) => handleMarkerClick(m.placeId, e)}
+              isExcluded={m.included === "false"}
             />
           ))}
         </Map>
