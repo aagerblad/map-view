@@ -10,7 +10,7 @@ import { addPlaces, excludePlace, includePlace } from "./lib/place_handlers";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
 
 export default function Page() {
-  const [post, setPost] = useState("burger");
+  const [post, setPost] = useState("");
   const [places, setPlaces] = useState<any[]>([]);
   const [selectedPlaces, setSelectedPlaces] = useState<Set<string>>(new Set());
   // const libraries = useMemo(() => ["places"], []);
@@ -104,6 +104,15 @@ export default function Page() {
               isSelected={selectedPlaces.has(m.placeId)}
               onMarkerClick={(e) => handleMarkerClick(m.placeId, e)}
               isExcluded={m.included === "false"}
+              onExclude={() => {
+                setPlaces(excludePlace(places, m.placeId));
+                const newSelected = new Set(selectedPlaces);
+                newSelected.delete(m.placeId);
+                setSelectedPlaces(newSelected);
+              }}
+              onInclude={() => {
+                setPlaces(includePlace(places, m.placeId));
+              }}
             />
           ))}
         </Map>

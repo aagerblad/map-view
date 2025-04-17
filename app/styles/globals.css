@@ -121,8 +121,6 @@ a {
 .panel {
   position: relative;
   z-index: 100;
-  /* margin: 10px; */
-  margin: 10px;
   width: 300px;
   height: 100vh;
   background-color: #000;
@@ -135,6 +133,7 @@ a {
   left: 0;
   cursor: auto;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .panel h1 {
@@ -142,13 +141,16 @@ a {
 }
 
 .panel form {
-  margin: 0 16px;
+  margin: 20px;
+  flex-shrink: 0;
 }
 
-.panel ul {
+.panel > ul {
   list-style: none;
   padding: 0;
   margin: 0 16px;
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .place {
@@ -223,6 +225,7 @@ a {
   font-size: 14px;
   transition: background-color 0.2s;
   width: calc(100% - 32px);
+  flex-shrink: 0;
 }
 
 .exclude-button:hover:not(:disabled) {
@@ -260,10 +263,10 @@ a {
 
 .Collapsible {
   background-color: #222;
-  position: fixed;
-  width: 300px;
-  bottom: 0;
+  position: relative;
+  width: 100%;
   border-top: 1px solid #444;
+  flex-shrink: 0;
 }
 
 .excluded-label {
@@ -335,18 +338,32 @@ a {
 }
 
 .keyword-button {
-  padding: 6px 12px;
+  padding: 4px 8px;
   background-color: #333;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   transition: background-color 0.2s;
 }
 
 .keyword-button:hover {
   background-color: #444;
+}
+
+.keyword-button.restart {
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyword-button.restart svg {
+  width: 16px;
+  height: 16px;
 }
 
 .restart-button {

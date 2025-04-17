@@ -113,28 +113,40 @@ function Panel({
 
   return (
     <div className="panel">
-      <h1>Map</h1>
-      <button 
-        className="restart-button"
-        type="button"
-        onClick={handleClearAll}
-      >
-        Restart
-      </button>
       <form onSubmit={handleSubmit}>
         <div className="search-container">
           <input
-            id="post"
             type="text"
-            value={post}
             className="search_window"
+            placeholder="Search places..."
+            value={post}
             onChange={(e) => setPost(e.target.value)}
           />
-          <button className="search_window_button" type="submit">
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          <button type="submit" className="search_window_button">
+            🔍
           </button>
         </div>
         <div className="keyword-buttons">
+          <button
+            className="keyword-button restart"
+            onClick={handleClearAll}
+            title="Restart"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+              <path d="M8 16H3v5" />
+            </svg>
+          </button>
           <button
             type="button"
             className="keyword-button"
@@ -148,6 +160,13 @@ function Panel({
             onClick={() => handleKeywordClick("restaurants")}
           >
             Restaurants
+          </button>
+          <button
+            type="button"
+            className="keyword-button"
+            onClick={() => handleKeywordClick("bars")}
+          >
+            Bars
           </button>
         </div>
       </form>

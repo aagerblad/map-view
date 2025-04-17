@@ -8,6 +8,8 @@ function MapMarker({
   isSelected,
   onMarkerClick,
   isExcluded,
+  onExclude,
+  onInclude,
 }: {
   name: string;
   position: any;
@@ -15,10 +17,22 @@ function MapMarker({
   isSelected: boolean;
   onMarkerClick: (event: React.MouseEvent) => void;
   isExcluded: boolean;
+  onExclude: () => void;
+  onInclude: () => void;
 }) {
   const pos = {
     lat: position.latitude,
     lng: position.longitude,
+  };
+
+  const handleExcludeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onExclude();
+  };
+
+  const handleIncludeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onInclude();
   };
 
   return (
@@ -36,6 +50,24 @@ function MapMarker({
         <span>{name}</span>
         <br />
         <img src={photo} alt={name} />
+        {!isExcluded && isSelected && (
+          <button 
+            className={styles.excludeButton}
+            onClick={handleExcludeClick}
+            title="Exclude"
+          >
+            ×
+          </button>
+        )}
+        {isExcluded && isSelected && (
+          <button 
+            className={styles.includeButton}
+            onClick={handleIncludeClick}
+            title="Add back"
+          >
+            ↺
+          </button>
+        )}
       </div>
     </AdvancedMarker>
   );
